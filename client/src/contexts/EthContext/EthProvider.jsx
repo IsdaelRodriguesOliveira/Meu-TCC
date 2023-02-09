@@ -17,7 +17,7 @@ function EthProvider() {
         try {
           address = artifact.networks[networkID].address;
           contract = new web3.eth.Contract(abi, address);
-          console.log("Contrato = ", contract)
+          //console.log("Contrato = ", contract)
         } catch (err) {
           console.error(err);
         }
@@ -29,7 +29,7 @@ function EthProvider() {
     }, []);
 
   useEffect(() => {
-    console.log("UseEffect")
+    //console.log("UseEffect")
     const tryInit = async () => {
       try {
         const artifact = require("../../contracts/Payment_validation.json");
@@ -44,7 +44,7 @@ function EthProvider() {
   }, [init]);
 
   useEffect(() => {
-    console.log("UseEffect 2")
+    //console.log("UseEffect 2")
     const events = ["chainChanged", "accountsChanged"];
     const handleChange = () => {
       init(state.artifact);
