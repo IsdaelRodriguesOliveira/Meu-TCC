@@ -1,3 +1,5 @@
+
+
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.22 <0.9.0;
 contract Payment_validation{
@@ -9,7 +11,12 @@ contract Payment_validation{
     }
     
     struct Usurario_espera{
-        uint256 valor_esperado;
+        //valor depositado no contrato
+        uint256 valor_recebido;
+        //numero do boleto a ser pago
+        uint numero_boleto;
+        //estado do pagamento: true (valor depositado), false (valor pendente)
+        bool estado_pagamento;
     }
 
     //rede das transacoes realizadas
@@ -17,18 +24,23 @@ contract Payment_validation{
     //rede das transacoes em espera
     mapping(address => Usurario_espera) rede_de_espera;
 
-    //inicializa uma transacao de um usuario. Este usuario ficara em espera
-    function abrir_transacao(address _endereco_atual, uint _valor_esperado) public returns(uint256){
-        rede_de_espera[_endereco_atual].valor_esperado = _valor_esperado;
-        return rede_de_espera[_endereco_atual].valor_esperado;
+    function deposit(uint256 _valor_esperado) external payable returns(string memory _resultado){
+        require(rede_de_espera[msg.sender].estado_pagamento == false && _valor_esperado == msg.value, "Pagamento nao realizado");
+        rede_de_espera[msg.sender].valor_recebido = msg.value;
+        rede_de_espera[msg.sender].estado_pagamento = true;
+        _resultado = "Pagamento realizado";
     }
-
-    //recebe o valor do usuário.
-    function deposit() external payable returns(string memory _resultado){
-        _resultado = "entrei";
-        //msg.value é o valor que está sendo passado, que deve ser igual ao valor esperado
-        require(msg.value == rede_de_espera[msg.sender].valor_esperado, "Valor nao aceito");
-        _resultado = "Passei aqui";
+    function deposit2(uint256 _valor_esperado) external payable returns(string memory _resultado){
+        require( _valor_esperado == msg.value, "Pagamento nao realizado");
+        rede_de_espera[msg.sender].valor_recebido = msg.value;
+        rede_de_espera[msg.sender].estado_pagamento = true;
+        _resultado = "Pagamento realizado";
+    }
+    function deposit3() external payable returns(string memory _resultado){
+        require(rede_de_espera[msg.sender].estado_pagamento == false , "Pagamento nao realizado");
+        rede_de_espera[msg.sender].valor_recebido = msg.value;
+        rede_de_espera[msg.sender].estado_pagamento = true;
+        _resultado = "Pagamento realizado";
     }
 
     //pega o balanco do saldo atual do contrato em wei
@@ -36,8 +48,13 @@ contract Payment_validation{
         return address(this).balance;
     }
 
+    //retorna qual valor o endereco atual deve pagar, da conta em aberto
     function registros_espera(address _endereco_atual)external view returns(uint256){
-        uint256 resultado = rede_de_espera[_endereco_atual].valor_esperado;
+        uint256 resultado = rede_de_espera[_endereco_atual].valor_recebido;
         return resultado;
+    }
+
+    function registros_espera2(address _endereco_atual)external view returns(uint256, uint256, bool){
+        return (rede_de_espera[_endereco_atual].valor_recebido, rede_de_espera[_endereco_atual].numero_boleto, rede_de_espera[_endereco_atual].estado_pagamento);
     }
 }
