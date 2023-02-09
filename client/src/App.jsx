@@ -12,11 +12,18 @@ function App() {
   const {saldo, contract} = ContractSaldo()
   const {isConnected, currentAccount, connectMetaMask} = UseMetaMask()
   //console.log("CurrentAccount",JSON.stringify(currentAccount))
-  const {OpenTransaction, CheckTransaction} = Transaction(currentAccount, contract)
+  const {OpenTransaction, CheckTransaction, DepositTransaction} = Transaction(currentAccount, contract)
   const [valor, setValor] = useState('')
   function submitOpenTransaction(){
     OpenTransaction(valor)
 
+  }
+  const [value, setValue] = useState('')
+  const [code, setCode] = useState('')
+  function submitt(){
+    //console.log("Valor", value)
+    //console.log("Codigo", code)
+    DepositTransaction(value, code)
   }
   let valorData = 0
   return (
@@ -39,8 +46,30 @@ function App() {
         <button onClick={ async () => {valorData = await CheckTransaction()}}>Verificar valor em espera</button>
 
         <hr />
+        <p>Cliente</p>
+        <p>Digite o numero do boleto</p>
+        <p>
+        <input
+          placeholder='Codigo'
+          value={code}
+          onChange={event => setCode(event.target.value)}
+          required
+        />
+        </p>
+        <p>Digite o valor do boleto</p>
+        <p>
+        <input
+          placeholder='Valor'
+          value={value}
+          onChange={event => setValue(event.target.value)}
+          required
+        />
+        </p>
         <p>
           <button onClick={connectMetaMask}>Connect Wallet</button>
+        </p>
+        <p>
+          <button onClick={submitt}>Depositar valor no contrato</button>
         </p>
         <hr />
       </div>

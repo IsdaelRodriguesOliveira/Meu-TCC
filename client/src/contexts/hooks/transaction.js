@@ -27,9 +27,25 @@ const Transaction = (currentAccount, contract) => {
         
         return valorData;
     }
+    const DepositTransaction = async (valor, code) => {
+        let retorno = ""
+        console.log("Valor de envio",valor)
+        try{
+            retorno = await contract.methods.deposit().send({
+                from: currentAccount,
+                value: Web3.utils.toWei(valor, "ether"),
+            });
+            console.log(retorno)
 
+        } catch (error){
+            console.log("Valor do retorno da funcao")
+            console.log(error)
+            console.log("Falha na tentativa de enviar")
+            console.log("Valor de envio", valor)
+        }
+    }
     
 
-    return {OpenTransaction, CheckTransaction}
+    return {OpenTransaction, CheckTransaction, DepositTransaction}
 }
 export default Transaction;
